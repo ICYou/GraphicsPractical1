@@ -21,7 +21,7 @@ namespace GraphicsPractical1
         private FrameRateCounter frameRateCounter;
         private BasicEffect effect;
         private VertexPositionColor[] vertices;
-
+        private Camera camera;
 
         public Game1()
         {
@@ -51,6 +51,8 @@ namespace GraphicsPractical1
             this.effect = new BasicEffect(this.GraphicsDevice);
             this.setupVertices();
             this.effect.VertexColorEnabled = true;
+
+            this.camera = new Camera(new Vector3(0, 0, 50), new Vector3(0, 0, 0), new Vector3(0, 1, 0));
         }
 
         protected override void UnloadContent()
@@ -71,6 +73,10 @@ namespace GraphicsPractical1
 
         protected override void Draw(GameTime gameTime)
         {
+
+            this.effect.Projection = this.camera.ProjectionMatrix;
+            this.effect.View = this.camera.ViewMatrix;
+            this.effect.World = Matrix.Identity; 
             foreach (EffectPass pass in this.effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
