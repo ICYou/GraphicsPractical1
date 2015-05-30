@@ -22,6 +22,8 @@ namespace GraphicsPractical1
         private BasicEffect effect;
         private VertexPositionColor[] vertices;
         private Camera camera;
+        private float angle;
+        private float[,] heightData;
 
         public Game1()
         {
@@ -47,12 +49,13 @@ namespace GraphicsPractical1
 
         protected override void LoadContent()
         {
+            loadHeightData();
             spriteBatch = new SpriteBatch(GraphicsDevice);
             this.effect = new BasicEffect(this.GraphicsDevice);
             this.setupVertices();
             this.effect.VertexColorEnabled = true;
 
-            this.camera = new Camera(new Vector3(0, 0, 50), new Vector3(0, 0, 0), new Vector3(0, 1, 0));
+            this.camera = new Camera(new Vector3(0, 0, -50), new Vector3(0, 0, 0), new Vector3(0, 1, 0));
         }
 
         protected override void UnloadContent()
@@ -61,22 +64,37 @@ namespace GraphicsPractical1
         }
         protected override void Update(GameTime gameTime)
         {
+            float timeStep = (float)gameTime.ElapsedGameTime.TotalSeconds;
             this.Window.Title = "Graphics Tutorial | FPS: " + this.frameRateCounter.FrameRate;
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-            // TODO: Add your update logic here
+            float deltaAngle = 0;
+            KeyboardState kbState = Keyboard.GetState();
+            if (kbState.IsKeyDown(Keys.Left))
+                deltaAngle += -3 * timeStep;
+            if (kbState.IsKeyDown(Keys.Right))
+                deltaAngle += 3 * timeStep;
+            if (deltaAngle != 0)
+                this.camera.Eye = Vector3.Transform(this.camera.Eye, Matrix.CreateRotationY(deltaAngle));
 
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
+            this.GraphicsDevice.RasterizerState = new RasterizerState
+            {
+                CullMode = CullMode.None,
+                FillMode = FillMode.WireFrame
+            };
 
             this.effect.Projection = this.camera.ProjectionMatrix;
             this.effect.View = this.camera.ViewMatrix;
-            this.effect.World = Matrix.Identity; 
+            this.effect.World = Matrix.Identity;
+
+            
             foreach (EffectPass pass in this.effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
@@ -99,5 +117,22 @@ VertexPositionColor.VertexDeclaration);
             this.vertices[2].Color = Color.Green;
         }
 
+        private void loadHeightData()
+        {
+            this.heightData = new float[4, 3];
+            this.heightData[0, 0] = 0;
+            this.heightData[1, 0] = 0;
+            this.heightData[2, 0] = 0;
+            this.heightData[3, 0] = 0;
+            this.heightData[0, 1] = 0.5f;
+            this.heightData[1, 1] = 0;
+            this.heightData[2, 1] = -1.0f;
+            this.heightData[3, 1] = 0.2f;
+            this.heightData[0, 2] = 1.0f;
+            this.heightData[1, 2] = 1.2f;
+            this.heightData[2, 2] = 0.8f;
+            this.heightData[3, 2] = 0;
+        }
     }
 }
+
