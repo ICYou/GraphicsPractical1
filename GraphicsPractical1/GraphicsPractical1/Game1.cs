@@ -24,6 +24,7 @@ namespace GraphicsPractical1
         private Camera camera;
         private float angle;
         private float[,] heightData;
+        private Terrain terrain;
 
         public Game1()
         {
@@ -54,8 +55,9 @@ namespace GraphicsPractical1
             this.effect = new BasicEffect(this.GraphicsDevice);
             this.setupVertices();
             this.effect.VertexColorEnabled = true;
+            this.terrain = new Terrain(this.heightData);
 
-            this.camera = new Camera(new Vector3(0, 0, -50), new Vector3(0, 0, 0), new Vector3(0, 1, 0));
+            this.camera = new Camera(new Vector3(0, 10, 0), new Vector3(0, 0, 0), new Vector3(0, 0, -1));
         }
 
         protected override void UnloadContent()
@@ -101,8 +103,7 @@ namespace GraphicsPractical1
             }
             GraphicsDevice.Clear(Color.CornflowerBlue);
             this.GraphicsDevice.Clear(Color.DarkSlateBlue);
-            this.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, this.vertices, 0, 1,
-VertexPositionColor.VertexDeclaration);
+            this.terrain.Draw(this.GraphicsDevice);
             base.Draw(gameTime);
         }
 
